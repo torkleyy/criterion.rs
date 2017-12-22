@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Command-Line Output - Criterion.rs Documentation</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="User Guide and Other Prose Documentation For Criterion.rs">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme -->
+        
+
+        
+
+        <!-- Fetch Clipboard.js from CDN but have a local fallback -->
+        <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.1/clipboard.min.js"></script>
+        <script>
+            if (typeof Clipboard == 'undefined') {
+                document.write(unescape("%3Cscript src='clipboard.min.js'%3E%3C/script%3E"));
+            }
+        </script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+
+        <!-- Fetch store.js from local - TODO add CDN when 2.x.x is available on cdnjs -->
+        <script src="store.js"></script>
+
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = store.get('mdbook-theme');
+            if (theme === null || theme === undefined) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = store.get('mdbook-sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li><a href="./criterion_rs.html"><strong>1.</strong> Criterion.rs</a></li><li><ul class="section"><li><a href="./getting_started.html"><strong>1.1.</strong> Getting Started</a></li></ul></li><li><a href="./user_guide/user_guide.html"><strong>2.</strong> User Guide</a></li><li><ul class="section"><li><a href="./user_guide/command_line.html" class="active"><strong>2.1.</strong> Command-Line Output</a></li><li><a href="./user_guide/plots_and_graphs.html"><strong>2.2.</strong> Plots &amp; Graphs</a></li><li><a href="./user_guide/benchmarking_with_inputs.html"><strong>2.3.</strong> Benchmarking With Inputs</a></li><li><a href="./user_guide/comparing_functions.html"><strong>2.4.</strong> Comparing Functions</a></li><li><a href="./user_guide/external_programs.html"><strong>2.5.</strong> Benchmarking External Programs</a></li></ul></li><li><a href="./analysis.html"><strong>3.</strong> Analysis Process</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page" tabindex="-1">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars" title="Toggle sidebar"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush" title="Change theme"></i>
+                    </div>
+
+                    <h1 class="menu-title">Criterion.rs Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html">
+                            <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <a class="header" href="./user_guide/command_line.html#command-line-output" id="command-line-output"><h1>Command-Line Output</h1></a>
+<p>Every Criterion.rs benchmark calculates statistics from the measured iterations and produces a report like this:</p>
+<pre><code>Benchmarking alloc
+&gt; Warming up for 1.0000 s
+&gt; Collecting 100 samples in estimated 31.601 s
+&gt; Found 11 outliers among 99 measurements (11.11%)
+  &gt; 4 (4.04%) high mild
+  &gt; 7 (7.07%) high severe
+&gt; Performing linear regression
+  &gt;  slope [5.9892 ms 6.0237 ms]
+  &gt;    R^2  0.9821950 0.9812767
+&gt; Estimating the statistics of the sample
+  &gt;   mean [5.9994 ms 6.1268 ms]
+  &gt; median [5.9781 ms 5.9935 ms]
+  &gt;    MAD [16.247 us 32.562 us]
+  &gt;     SD [61.936 us 538.86 us]
+</code></pre>
+<a class="header" href="./user_guide/command_line.html#warmup" id="warmup"><h2>Warmup</h2></a>
+<p>Every Criterion.rs benchmark iterates the benchmarked function automatically for a configurable warmup period (by default, for one second). For Rust function benchmarks, this is to warm up the processor caches and (if applicable) file system caches. For external program benchmarks, it can also be used to warm up JIT compilers.</p>
+<a class="header" href="./user_guide/command_line.html#collecting-samples" id="collecting-samples"><h2>Collecting Samples</h2></a>
+<p>Criterion iterates the function to be benchmarked with a varying number of iterations to generate an estimate of the time taken by each iteration. The number of samples is configurable. It also prints an estimate of the time the sampling process will take based on the time per iteration during the warmup period.</p>
+<a class="header" href="./user_guide/command_line.html#detecting-outliers" id="detecting-outliers"><h2>Detecting Outliers</h2></a>
+<p>Criterion.rs attempts to detect unusually high or low samples and reports them as outliers. A large number of outliers suggests that the benchmark results are noisy and should be viewed with appropriate skepticism. In this case, you can see that there are some samples which took much longer than normal. This might be caused by unpredictable load on the computer running the benchmarks, thread or process scheduling, or irregularities in the time taken by the code being benchmarked.</p>
+<p>In order to ensure reliable results, benchmarks should be run on a quiet computer and should be designed to do approximately the same amount of work for each iteration. If this is not possible, consider increasing the sample size and/or measurement time to reduce the influence of outliers on the results at the cost of longer benchmarking time. Alternately, the warmup period can be extended (to ensure that any JIT compilers or similar are warmed up) or other iteration loops can be used to perform setup before each benchmark to prevent that from affecting the results.</p>
+<a class="header" href="./user_guide/command_line.html#linear-regression" id="linear-regression"><h2>Linear Regression</h2></a>
+<pre><code>&gt; Performing linear regression
+  &gt;  slope [5.9892 ms 6.0237 ms]
+  &gt;    R^2  0.9821950 0.9812767
+</code></pre>
+<p>Here, Criterion.rs attempts to calculate the time taken per iteration of the benchmark.</p>
+<p>The slope represents Criterion.rs' best guess at the time taken for each iteration of the benchmark. More precisely, this shows a 95% confidence interval on the time per iteration. The confidence level is configurable. A greater confidence level (eg. 99%) will widen the interval and thus provide the user with less information about the true slope. On the other hand, a lesser confidence interval (eg. 90%) will narrow the interval but then the user is less confident that the interval contains the true slope. 95% is generally a good balance.</p>
+<p>The R^2 line indicates how accurately the linear model fits the measurements. If the measurements aren't too noisy and the benchmark is performing the same amount of work for each iteration, this number should be very close to 1.0. If it is not, the benchmark results may be unreliable.</p>
+<a class="header" href="./user_guide/command_line.html#estimating-statistics" id="estimating-statistics"><h2>Estimating Statistics</h2></a>
+<pre><code>&gt; Estimating the statistics of the sample
+  &gt;   mean [5.9994 ms 6.1268 ms]
+  &gt; median [5.9781 ms 5.9935 ms]
+  &gt;    MAD [16.247 us 32.562 us]
+  &gt;     SD [61.936 us 538.86 us]
+</code></pre>
+<p>Criterion.rs performs <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">bootstrap resampling</a> to estimate some important statistics about the samples collected. The number of bootstrap samples is configurable, and defaults to 100,000.</p>
+<a class="header" href="./user_guide/command_line.html#meanmedian" id="meanmedian"><h4>Mean/Median</h4></a>
+<p>These lines show a confidence interval on the mean and median values of the sample and give a good estimate of how long you can expect one iteration of the benchmark to take. The mean and median values should be quite close - if they are not, the benchmark may be unreliable due to a high number of outliers.</p>
+<a class="header" href="./user_guide/command_line.html#madsd" id="madsd"><h4>MAD/SD</h4></a>
+<p>These lines report the <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation">Median Absolute Deviation</a> and <a href="https://en.wikipedia.org/wiki/Standard_deviation">Standard Deviation</a> of the sample. This is another indicator of noise in the benchmark. In a good benchmark, the MAD and SD will be relatively small compared to the mean and median. Large MAD or SD values indicate that there is a great deal of noise in the sample and the results may be unreliable or Criterion.rs may be unable to detect small optimizations or regressions.</p>
+<a class="header" href="./user_guide/command_line.html#comparing-to-previous-sample" id="comparing-to-previous-sample"><h2>Comparing To Previous Sample</h2></a>
+<p>When a Criterion.rs benchmark is run, it saves statistical information in the <code>.criterion</code> directory. Subsequent executions of the benchmark will load this data and compare it with the current sample to show the effects of changes in the code.</p>
+<pre><code>alloc: Comparing with previous sample
+&gt; Performing a two-sample t-test
+  &gt; H0: Both samples have the same mean
+  &gt; p = 0
+  &gt; Strong evidence to reject the null hypothesis
+&gt; Estimating relative change of statistics
+  &gt;   mean [-34.062% -31.916%]
+  &gt; median [-33.186% -32.662%]
+  &gt; mean has improved by 33.00%
+  &gt; median has improved by 32.84%
+</code></pre>
+<p>First, Criterion.rs performs a statistical test to see whether the performance has changed significantly between runs (indicated by the 'Strong evidence...' line). Then it will proceed to estimate by how much the performance has changed. In this case, the performance has improved significantly. The <code>p = 0</code> line is an indicator of the chances that the observed differences in mean iteration time could have happened by chance alone. If the difference in means is large compared to the noise (indicated by p being close to zero) then it is likely there is a true difference in performance between the benchmarking runs.</p>
+<pre><code>alloc: Comparing with previous sample
+&gt; Performing a two-sample t-test
+  &gt; H0: Both samples have the same mean
+  &gt; p = 0.56624
+  &gt; Can't reject the null hypothesis
+&gt; Estimating relative change of statistics
+  &gt;   mean [-2.1989% +1.3191%]
+  &gt; median [-1.0305% -0.0042%]
+</code></pre>
+<p>In this example, the change in iteration time is much smaller. Note that p is much larger than zero and Criterion.rs reports that it can't reject the null hypothesis (ie. that it can't be confident the different is due to a true change in performance rather than chance). The threshold between 'Strong evidence...' and 'Can't reject...' is configurable, and defaults to 0.05. Increasing this threshold allows Criterion to detect smaller changes in noisier data at the cost of a greater chance of false positives.</p>
+<pre><code>alloc: Comparing with previous sample
+&gt; Performing a two-sample t-test
+  &gt; H0: Both samples have the same mean
+  &gt; p = 0
+  &gt; Strong evidence to reject the null hypothesis
+&gt; Estimating relative change of statistics
+  &gt;   mean [+54.245% +62.569%]
+  &gt; median [+49.228% +50.627%]
+  &gt; mean has regressed by 58.13%
+  &gt; median has regressed by 49.80%
+thread 'alloc' panicked at 'alloc has regressed', src/analysis/compare.rs:58:8
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
+test alloc ... FAILED
+</code></pre>
+<p>In this example, the performance has regressed significantly. When Criterion.rs is confident of a performance regression, it panics in order to fail the test.</p>
+<a class="header" href="./user_guide/command_line.html#a-note-of-caution" id="a-note-of-caution"><h2>A Note Of Caution</h2></a>
+<p>Criterion.rs is designed to produce robust statistics when possible, but it can't account for everything. For example, the performance improvements and regressions listed in the above examples were created just by switching my laptop between battery power and wall power rather than changing the code under test. Care must be taken to ensure that benchmarks are performed under similar conditions in order to produce meaningful results.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a rel="prev" href="./user_guide/user_guide.html" class="mobile-nav-chapters previous" title="Previous chapter">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="./user_guide/plots_and_graphs.html" class="mobile-nav-chapters next" title="Next chapter">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="./user_guide/user_guide.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="./user_guide/plots_and_graphs.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        
+
+        
+
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS script -->
+        
+
+    </body>
+</html>
